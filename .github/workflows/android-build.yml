@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - master
+      - android-build
 
 jobs:
   build:
