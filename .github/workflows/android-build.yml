@@ -1,0 +1,54 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [main, android]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y python3-pip build-essential git zip unzip openjdk-17-jdk libncurses5 libncurses5-dev libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libffi-dev libssl-dev zlib1g-dev libgdbm-dev libnss3-dev libreadline-dev
+    
+    - name: Accept Android licenses
+      run: |
+        yes | sdkmanager --licenses 2>/dev/null || true
+    
+    - name: Build APK
+      env:
+        JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
+        ANDROID_HOME: /home/runner/android-sdk
+        ANDROID_SDK_ROOT: /home/runner/android-sdk
+      run: |
+        mkdir -p $ANDROID_HOME/cmdline-tools
+        cd $ANDROID_HOME/cmdline-tools
+        curl -sL https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -o cmdline.zip
+        unzip -q cmdline.zip
+        chmod +x latest/bin/*
+        yes | latest/bin/sdkmanager --licenses 2>/dev/null || true
+        cd $GITHUB_WORKSPACE
+        rm -rf .buildozer
+        buildozer android debug
+      timeout-minutes: 60
+    
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: hotmail-inboxer-apk
+        path: bin/*.apk
+        retention-days: 7
