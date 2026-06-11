@@ -36,8 +36,6 @@ jobs:
         ANDROID_HOME: /home/runner/android-sdk
         ANDROID_SDK_ROOT: /home/runner/android-sdk
         ANDROIDSDK: /home/runner/android-sdk
-        # Disable SDK update check to speed up
-        BUILDZER_SKIP_SDK_UPDATE: "1"
       run: |
         mkdir -p $ANDROID_HOME/cmdline-tools
         cd $ANDROID_HOME/cmdline-tools
@@ -46,10 +44,14 @@ jobs:
         if [ -d "cmdline-tools" ]; then mv cmdline-tools latest; fi
         chmod +x latest/bin/*
         yes | latest/bin/sdkmanager --licenses 2>/dev/null || true
+        
+        # Create symlink so buildozer can find sdkmanager
+        mkdir -p $ANDROID_HOME/tools/bin
+        ln -sf $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager $ANDROID_HOME/tools/bin/sdkmanager
+        
         cd $GITHUB_WORKSPACE
         pip install buildozer cython
         rm -rf .buildozer
-        # Remove the NDK path so buildozer downloads it
         sed -i '/android.ndk_path/d' buildozer.spec
         buildozer android debug
       timeout-minutes: 120
