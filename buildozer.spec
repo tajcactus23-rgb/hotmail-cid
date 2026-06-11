@@ -6,8 +6,8 @@ version = 2.1.0
 
 source.dir = .
 source.include.exts = py
-# Use SDL2 bootstrap with simpler requirements
-requirements = python3,kivy,sdl2
+# Simple requirements - let buildozer figure out versions
+requirements = python3,kivy
 
 orientation = all
 fullscreen = 0

@@ -55,21 +55,16 @@ jobs:
         
         cd $GITHUB_WORKSPACE
         pip install buildozer cython
+        
         rm -rf .buildozer
         
-        # Let buildozer handle NDK automatically (don't set ndk_path)
+        # Use the SDK from the runner's environment
         sed -i '/android.ndk_path/d' buildozer.spec
+        sed -i '/android.sdk_path/d' buildozer.spec
         
-        # Install libtool macros
-        sudo apt-get install -y autopoint libltdl-dev
-        sudo ln -sf /usr/share/aclocal/libtool.m4 /usr/share/aclocal/libtool.m4 2>/dev/null || true
-        sudo ln -sf /usr/share/aclocal/ltoptions.m4 /usr/share/aclocal/ltoptions.m4 2>/dev/null || true
-        sudo ln -sf /usr/share/aclocal/ltsugar.m4 /usr/share/aclocal/ltsugar.m4 2>/dev/null || true
-        sudo ln -sf /usr/share/aclocal/ltversion.m4 /usr/share/aclocal/ltversion.m4 2>/dev/null || true
-        sudo ln -sf /usr/share/aclocal/lt~obsolete.m4 /usr/share/aclocal/lt~obsolete.m4 2>/dev/null || true
-        
-        cd $GITHUB_WORKSPACE
-        buildozer android debug
+        # Remove libtool patching - it doesn't help
+        # Build without debug flag
+        buildozer android debug || buildozer android release
       timeout-minutes: 120
     
     - name: Upload APK
