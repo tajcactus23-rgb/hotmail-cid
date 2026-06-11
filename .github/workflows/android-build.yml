@@ -36,8 +36,8 @@ jobs:
         ANDROID_HOME: /home/runner/android-sdk
         ANDROID_SDK_ROOT: /home/runner/android-sdk
         ANDROIDSDK: /home/runner/android-sdk
-        # Force older libtool compatibility
-        LIBTOOLIZE: /usr/bin/libtoolize
+        AUTOCONF: /usr/bin/autoconf2.69
+        AUTORECONF: /usr/bin/autoreconf2.69
       run: |
         mkdir -p $ANDROID_HOME/cmdline-tools
         cd $ANDROID_HOME/cmdline-tools
@@ -57,14 +57,9 @@ jobs:
         # Remove ndk_path to let buildozer handle it
         sed -i '/android.ndk_path/d' buildozer.spec
         
-        # Pre-clone python-for-android to patch it
-        mkdir -p .buildozer/android/platform
-        git clone --depth 1 https://github.com/kivy/python-for-android.git .buildozer/android/platform/python-for-android 2>/dev/null || true
-        
-        # Apply patch for libtool
-        cd .buildozer/android/platform/python-for-android
-        sed -i 's/LT_SYS_SYMBOL_USCORE/LT_OBJDIR/g' pythonforandroid/recipes/hostpython3/all/*.py 2>/dev/null || true
-        sed -i 's/autoreconf/autoreconf --install/g' pythonforandroid/recipes/hostpython3/all/*.py 2>/dev/null || true
+        # Use older stable p4a that works with new autoconf
+        rm -rf .buildozer/android/platform/python-for-android
+        git clone --depth 1 --branch 2022.08.18 https://github.com/kivy/python-for-android.git .buildozer/android/platform/python-for-android
         
         cd $GITHUB_WORKSPACE
         buildozer android debug

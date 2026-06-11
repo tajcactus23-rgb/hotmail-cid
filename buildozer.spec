@@ -6,7 +6,8 @@ version = 2.1.0
 
 source.dir = .
 source.include.exts = py
-requirements = python3,kivy
+# Use SDL2 bootstrap with simpler requirements
+requirements = python3,kivy,sdl2
 
 orientation = all
 fullscreen = 0
