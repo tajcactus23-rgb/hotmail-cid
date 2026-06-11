@@ -57,9 +57,13 @@ jobs:
         # Remove ndk_path to let buildozer handle it
         sed -i '/android.ndk_path/d' buildozer.spec
         
-        # Use older stable p4a that works with new autoconf
-        rm -rf .buildozer/android/platform/python-for-android
-        git clone --depth 1 --branch 2022.08.18 https://github.com/kivy/python-for-android.git .buildozer/android/platform/python-for-android
+        # Install libtool macros
+        sudo apt-get install -y autopoint libltdl-dev
+        sudo ln -sf /usr/share/aclocal/libtool.m4 /usr/share/aclocal/libtool.m4 2>/dev/null || true
+        sudo ln -sf /usr/share/aclocal/ltoptions.m4 /usr/share/aclocal/ltoptions.m4 2>/dev/null || true
+        sudo ln -sf /usr/share/aclocal/ltsugar.m4 /usr/share/aclocal/ltsugar.m4 2>/dev/null || true
+        sudo ln -sf /usr/share/aclocal/ltversion.m4 /usr/share/aclocal/ltversion.m4 2>/dev/null || true
+        sudo ln -sf /usr/share/aclocal/lt~obsolete.m4 /usr/share/aclocal/lt~obsolete.m4 2>/dev/null || true
         
         cd $GITHUB_WORKSPACE
         buildozer android debug
