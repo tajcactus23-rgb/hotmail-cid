@@ -40,6 +40,8 @@ jobs:
         cd $ANDROID_HOME/cmdline-tools
         curl -sL https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -o cmdline.zip
         unzip -q cmdline.zip
+        # The extracted folder is 'cmdline-tools', rename to 'latest'
+        if [ -d "cmdline-tools" ]; then mv cmdline-tools latest; fi
         chmod +x latest/bin/*
         yes | latest/bin/sdkmanager --licenses 2>/dev/null || true
         cd $GITHUB_WORKSPACE
