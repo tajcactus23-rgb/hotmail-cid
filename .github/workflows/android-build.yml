@@ -24,7 +24,7 @@ jobs:
     - name: Install system dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y python3-pip build-essential git zip unzip openjdk-17-jdk libncurses6 libncurses5-dev libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libffi-dev libssl-dev zlib1g-dev libtool autoconf automake pkg-config
+        sudo apt-get install -y python3-pip build-essential git zip unzip openjdk-17-jdk libncurses6 libncurses5-dev libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libffi-dev libssl-dev zlib1g-dev libtool autoconf2.69 pkg-config
     
     - name: Accept Android licenses
       run: |
