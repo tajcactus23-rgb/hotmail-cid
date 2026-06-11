@@ -35,6 +35,7 @@ jobs:
         JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
         ANDROID_HOME: /home/runner/android-sdk
         ANDROID_SDK_ROOT: /home/runner/android-sdk
+        ANDROIDSDK: /home/runner/android-sdk
       run: |
         mkdir -p $ANDROID_HOME/cmdline-tools
         cd $ANDROID_HOME/cmdline-tools
@@ -44,9 +45,12 @@ jobs:
         if [ -d "cmdline-tools" ]; then mv cmdline-tools latest; fi
         chmod +x latest/bin/*
         yes | latest/bin/sdkmanager --licenses 2>/dev/null || true
+        yes | latest/bin/sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0" "ndk;26b" 2>/dev/null || true
         cd $GITHUB_WORKSPACE
         pip install buildozer cython
         rm -rf .buildozer
+        # Set sdk path in buildozer
+        sed -i 's|android.sdk_path = /workspace/android-sdk|android.sdk_path = /home/runner/android-sdk|g' buildozer.spec
         buildozer android debug
       timeout-minutes: 60
     
