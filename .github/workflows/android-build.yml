@@ -49,13 +49,16 @@ jobs:
 
         mkdir -p $ANDROID_HOME/tools/bin
         ln -sf $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager $ANDROID_HOME/tools/bin/sdkmanager
-
+        
+        # Install NDK 26
+        yes | latest/bin/sdkmanager "ndk;26.1.10909125" 2>/dev/null || true
+        
         cd $GITHUB_WORKSPACE
         pip install buildozer cython
         rm -rf .buildozer
         
-        # Remove ndk_path to let buildozer handle it
-        sed -i '/android.ndk_path/d' buildozer.spec
+        # Set NDK version in buildozer.spec (don't remove ndk_path)
+        sed -i 's|android.ndk_path.*|android.ndk_path = /home/runner/android-sdk/ndk/26.1.10909125|' buildozer.spec
         
         # Install libtool macros
         sudo apt-get install -y autopoint libltdl-dev
