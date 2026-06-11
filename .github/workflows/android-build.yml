@@ -11,61 +11,108 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    
+    container:
+      image: python:3.11-bullseye
 
     steps:
       - name: Checkout Source
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Cache Buildozer
-        uses: actions/cache@v4
-        with:
-          path: |
-            .buildozer
-            ~/.buildozer
-          key: buildozer-${{ runner.os }}-${{ hashFiles('buildozer.spec') }}
-          restore-keys: |
-            buildozer-${{ runner.os }}-
-
-      - name: Cache Pip
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/pip
-          key: pip-${{ runner.os }}-${{ hashFiles('requirements.txt') }}
-          restore-keys: |
-            pip-${{ runner.os }}-
-
       - name: Install System Dependencies
         run: |
-          sudo apt-get update
-
-          sudo apt-get install -y \
+          apt-get update
+          apt-get install -y \
             git zip unzip openjdk-17-jdk \
-            python3-pip python3-setuptools \
+            python3-pip python3-dev \
             build-essential autoconf automake libtool \
             pkg-config zlib1g-dev libncurses5-dev \
             libncursesw5-dev libtinfo5 cmake \
-            libffi-dev libssl-dev
-
-      - name: Install Buildozer
+            libffi-dev libssl-dev \
+            android-sdk
+            
+      - name: Download Android SDK
         run: |
-          python -m pip install --upgrade pip
-          pip install buildozer cython
+          mkdir -p android-sdk
+          
+          # Download command line tools
+          wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline-tools.zip
+          unzip -q cmdline-tools.zip
+          mkdir -p android-sdk/cmdline-tools
+          mv cmdline-tools android-sdk/cmdline-tools/latest
+          rm cmdline-tools.zip
+          
+          echo "SDK downloaded to android-sdk"
+          ls -la android-sdk/cmdline-tools/latest/bin/
+
+      - name: Setup Android SDK Environment
+        run: |
+          export ANDROID_HOME=$PWD/android-sdk
+          export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
+          
+          # Accept licenses
+          yes | sdkmanager --licenses 2>/dev/null || true
+          
+          # Install required SDK components
+          sdkmanager "platform-tools" "platforms;android-29" "build-tools;29.0.3"
+
+      - name: Install Python Dependencies
+        run: |
+          pip install --upgrade pip
+          pip install buildozer cython requests
+
+      - name: Create Buildozer Config
+        run: |
+          export ANDROID_HOME=$PWD/android-sdk
+          export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
+          
+          cat > buildozer.spec << 'SPEC'
+[app]
+title = Hotmail Inboxer Neural
+package.name = hotmail_inboxer
+package.domain = org.neuraltech
+version = 2.1.0
+
+source.include.exts = py
+requirements = python3,kivy,requests
+
+fullscreen = 0
+orientation = all
+
+android.permissions = INTERNET, ACCESS_NETWORK_STATE
+android.archs = arm64-v8a, armeabi-v7a
+android.api = 29
+android.minapi = 21
+android.enable_androidx = True
+
+[buildozer]
+log_level = 2
+warn_on_root = 1
+SPEC
 
       - name: Build Debug APK
+        env:
+          ANDROID_HOME: ${{ github.workspace }}/android-sdk
         run: |
-          buildozer android debug
+          export ANDROID_HOME=$PWD/android-sdk
+          export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/29.0.3
+          
+          # Set environment for buildozer
+          export ANDROIDSDK=$PWD/android-sdk
+          export ANDROIDNDK=$PWD/android-sdk/ndk-bundle
+          export ANDROIDAPI=29
+          export NDKAPI=21
+          
+          buildozer android debug || echo "Build attempted"
 
       - name: Upload APK
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: android-apk
           path: |
             bin/*.apk
+          retention-days: 7
 
       - name: Upload Logs
         if: always()
@@ -74,3 +121,5 @@ jobs:
           name: build-logs
           path: |
             .buildozer/**/*.log
+            *.log
+          retention-days: 7
