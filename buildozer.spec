@@ -18,8 +18,6 @@ android.api = 29
 android.minapi = 24
 
 android.sdk_path = /home/runner/android-sdk
-# Use NDK 26 which is better supported
-android.ndk_path = /home/runner/android-sdk/ndk/26.1.10909125
 android.ndk_api = 26
 
 [buildozer]
