@@ -1,0 +1,10 @@
+﻿2026-06-11T12:52:47.7732597Z Post job cleanup.
+2026-06-11T12:52:47.8709599Z [command]/usr/bin/git version
+2026-06-11T12:52:47.8743826Z git version 2.54.0
+2026-06-11T12:52:47.8783259Z Temporarily overriding HOME='/home/runner/work/_temp/0efbe699-d739-466c-8e7f-927b8f3c7cd7' before making global git config changes
+2026-06-11T12:52:47.8784447Z Adding repository directory to the temporary git global config as a safe directory
+2026-06-11T12:52:47.8798148Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hotmail-cid/hotmail-cid
+2026-06-11T12:52:47.8831859Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-06-11T12:52:47.8864137Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-06-11T12:52:47.9050230Z fatal: No url found for submodule path '.buildozer/android/platform/python-for-android' in .gitmodules
+2026-06-11T12:52:47.9094210Z ##[warning]The process '/usr/bin/git' failed with exit code 128
