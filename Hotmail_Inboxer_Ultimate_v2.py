@@ -88,6 +88,446 @@ def play_success_chime():
         time.sleep(0.05)
 
 
+# ==================== WINDOWS 11 STYLE LOGIN SCREEN ====================
+class AdminLoginScreen:
+    """
+    Windows 11 Fluent Design Admin Login Screen
+    Modern, sleek, professional with blur effects and animations
+    """
+    
+    def __init__(self, on_login_success, on_cancel=None):
+        self.on_login_success = on_login_success
+        self.on_cancel = on_cancel
+        self.window = ctk.CTk()
+        self.window.geometry("500x650")
+        self.window.title("HOTMAIL INBOXER - Admin Access")
+        self.window.resizable(False, False)
+        
+        # Center on screen
+        self.window.update_idletasks()
+        screen_w = self.window.winfo_screenwidth()
+        screen_h = self.window.winfo_screenheight()
+        x = (screen_w - 500) // 2
+        y = (screen_h - 650) // 2
+        self.window.geometry(f"500x650+{x}+{y}")
+        
+        # Login credentials
+        self.admin_user = "bluemeanie"
+        self.admin_pass = "access2026"
+        
+        self._build_ui()
+        self._animate_entry()
+        
+    def _build_ui(self):
+        # Main container with gradient background
+        main_frame = ctk.CTkFrame(self.window, fg_color="#1a1a2e", corner_radius=0)
+        main_frame.pack(fill="both", expand=True)
+        
+        # Header with app icon and title
+        header = ctk.CTkFrame(main_frame, fg_color="transparent", height=80)
+        header.pack(fill="x", pady=(30, 10))
+        
+        # App icon (styled)
+        icon_frame = ctk.CTkFrame(header, width=60, height=60, fg_color="#0078d4", corner_radius=12)
+        icon_frame.pack(pady=10)
+        icon_label = ctk.CTkLabel(icon_frame, text="📧", font=("Segoe UI", 28))
+        icon_label.pack(pady=15)
+        
+        # Title
+        title_label = ctk.CTkLabel(header, text="HOTMAIL INBOXER", 
+                                    font=("Segoe UI", 22, "bold"), text_color="#ffffff")
+        title_label.pack(pady=5)
+        
+        subtitle = ctk.CTkLabel(header, text="Administrator Access Required",
+                                font=("Segoe UI", 11), text_color="#888888")
+        subtitle.pack()
+        
+        # Login form card (Windows 11 style)
+        login_card = ctk.CTkFrame(main_frame, fg_color="#252538", corner_radius=12)
+        login_card.pack(fill="x", padx=40, pady=20)
+        
+        # User field
+        user_label = ctk.CTkLabel(login_card, text="Username", font=("Segoe UI", 11), 
+                                   text_color="#888888")
+        user_label.pack(anchor="w", padx=20, pady=(20, 5))
+        
+        self.user_entry = ctk.CTkEntry(login_card, font=("Segoe UI", 14),
+                                        fg_color="#3a3a4d", border_color="#0078d4",
+                                        border_width=2, height=45,
+                                        placeholder_text="Enter username...")
+        self.user_entry.pack(fill="x", padx=20, pady=(0, 15))
+        self.user_entry.insert(0, "bluemeanie")
+        
+        # Password field
+        pass_label = ctk.CTkLabel(login_card, text="Password", font=("Segoe UI", 11), 
+                                    text_color="#888888")
+        pass_label.pack(anchor="w", padx=20, pady=(0, 5))
+        
+        self.pass_entry = ctk.CTkEntry(login_card, font=("Segoe UI", 14), show="•",
+                                        fg_color="#3a3a4d", border_color="#4a4a5d",
+                                        border_width=2, height=45,
+                                        placeholder_text="Enter password...")
+        self.pass_entry.pack(fill="x", padx=20, pady=(0, 20))
+        
+        # Show/hide password toggle
+        self.show_pass = ctk.CTkCheckBox(login_card, text="Show password", 
+                                          font=("Segoe UI", 10), fg_color="#0078d4",
+                                          command=self._toggle_password)
+        self.show_pass.pack(anchor="w", padx=20)
+        
+        # Error message label
+        self.error_label = ctk.CTkLabel(login_card, text="", font=("Segoe UI", 11),
+                                         text_color="#ff4444")
+        self.error_label.pack(pady=5)
+        
+        # Login button (Windows 11 style)
+        self.login_btn = ctk.CTkButton(login_card, text="Sign In", 
+                                        font=("Segoe UI", 13, "bold"),
+                                        fg_color="#0078d4", hover_color="#106ebe",
+                                        height=45, corner_radius=8,
+                                        command=self._do_login)
+        self.login_btn.pack(fill="x", padx=20, pady=(15, 10))
+        
+        # Skip button
+        skip_btn = ctk.CTkButton(main_frame, text="Continue as Guest →",
+                                  font=("Segoe UI", 10), text_color="#888888",
+                                  fg_color="transparent", hover_color="#2a2a3e",
+                                  height=30, command=self._skip_login)
+        skip_btn.pack(pady=10)
+        
+        # Footer
+        footer = ctk.CTkLabel(main_frame, text="HOTMAIL INBOXER ULTIMATE v2.0 | © 2026",
+                               font=("Segoe UI", 9), text_color="#555555")
+        footer.pack(side="bottom", pady=15)
+        
+        # Bind Enter key
+        self.pass_entry.bind("<Return>", lambda e: self._do_login())
+        
+    def _toggle_password(self):
+        if self.show_pass.get():
+            self.pass_entry.configure(show="")
+        else:
+            self.pass_entry.configure(show="•")
+    
+    def _animate_entry(self):
+        """Subtle animation on entry fields"""
+        def pulse():
+            current_border = self.user_entry.cget("border_color")
+            if current_border == "#0078d4":
+                self.user_entry.configure(border_color="#00a0ff")
+            else:
+                self.user_entry.configure(border_color="#0078d4")
+            self.window.after(1000, pulse)
+        pulse()
+    
+    def _do_login(self):
+        user = self.user_entry.get().strip()
+        pw = self.pass_entry.get()
+        
+        if user == self.admin_user and pw == self.admin_pass:
+            self.error_label.configure(text="✓ Access granted!", text_color="#00ff88")
+            self.window.after(500, self._close_and_launch)
+        else:
+            self.error_label.configure(text="✗ Invalid credentials", text_color="#ff4444")
+            self._shake_window()
+            play_beep(200, 100)
+    
+    def _skip_login(self):
+        self.error_label.configure(text="→ Launching in guest mode...", text_color="#ffcc00")
+        self.window.after(500, self._close_and_launch_guest)
+    
+    def _shake_window(self):
+        """Shake animation for wrong password"""
+        import random
+        for _ in range(5):
+            x = random.randint(-10, 10)
+            self.window.geometry(f"500x650+{x+500}+{350}")
+            self.window.update()
+            time.sleep(0.05)
+        self.window.geometry("500x650+500+350")
+    
+    def _close_and_launch(self):
+        self.window.destroy()
+        self.on_login_success(admin=True, user=self.admin_user)
+    
+    def _close_and_launch_guest(self):
+        self.window.destroy()
+        self.on_login_success(admin=False, user="Guest")
+    
+    def show(self):
+        self.window.mainloop()
+
+
+# ==================== STEP-BY-STEP INSTRUCTION WIZARD ====================
+class InstructionWizard:
+    """
+    Interactive step-by-step instruction wizard for new users
+    Windows 11 Fluent Design walkthrough
+    """
+    
+    def __init__(self, parent, module_name, steps):
+        self.parent = parent
+        self.module_name = module_name
+        self.steps = steps
+        self.current_step = 0
+        
+        self.window = ctk.CTkToplevel(parent)
+        self.window.title(f"How to Use: {module_name}")
+        self.window.geometry("700x550")
+        self.window.transient(parent)
+        self.window.grab_set()
+        
+        # Center
+        self.window.update_idletasks()
+        screen_w = self.window.winfo_screenwidth()
+        screen_h = self.window.winfo_screenheight()
+        x = (screen_w - 700) // 2
+        y = (screen_h - 550) // 2
+        self.window.geometry(f"700x550+{x}+{y}")
+        
+        self._build_ui()
+    
+    def _build_ui(self):
+        # Header
+        header = ctk.CTkFrame(self.window, fg_color="#0078d4", height=70)
+        header.pack(fill="x")
+        header.pack_propagate(False)
+        
+        icon_label = ctk.CTkLabel(header, text=f"📚", font=("Segoe UI", 32))
+        icon_label.pack(side="left", padx=20, pady=15)
+        
+        title_frame = ctk.CTkFrame(header, fg_color="transparent")
+        title_frame.pack(side="left", pady=15)
+        
+        title = ctk.CTkLabel(title_frame, text=f"Getting Started: {self.module_name}",
+                             font=("Segoe UI", 18, "bold"), text_color="#ffffff")
+        title.pack()
+        
+        subtitle = ctk.CTkLabel(title_frame, text=f"Step {self.current_step + 1} of {len(self.steps)}",
+                                font=("Segoe UI", 11), text_color="#ccddff")
+        subtitle.pack()
+        
+        self.step_label = subtitle
+        
+        # Progress bar
+        progress_frame = ctk.CTkFrame(self.window, fg_color="#f0f0f0", height=4)
+        progress_frame.pack(fill="x")
+        progress_frame.pack_propagate(False)
+        
+        self.progress_bar = ctk.CTkProgressBar(progress_frame, height=4, 
+                                                 fg_color="#e0e0e0", progress_color="#0078d4",
+                                                 corner_radius=0)
+        self.progress_bar.pack(fill="x")
+        self._update_progress()
+        
+        # Content area
+        content = ctk.CTkFrame(self.window, fg_color="#ffffff")
+        content.pack(fill="both", expand=True, padx=30, pady=20)
+        
+        # Step title
+        self.step_title = ctk.CTkLabel(content, text="", font=("Segoe UI", 20, "bold"),
+                                         text_color="#1a1a1a", anchor="w")
+        self.step_title.pack(fill="x", pady=(10, 20))
+        
+        # Step description (rich text)
+        self.step_desc = ctk.CTkTextbox(content, font=("Segoe UI", 13), 
+                                         fg_color="#fafafa", text_color="#333333",
+                                         border_width=1, border_color="#e0e0e0",
+                                         wrap="word", activate_scrollbar=False)
+        self.step_desc.pack(fill="both", expand=True, pady=(0, 10))
+        self.step_desc.configure(state="disabled")
+        
+        # Example/Tip box
+        self.tip_frame = ctk.CTkFrame(content, fg_color="#f3f9ff", corner_radius=8,
+                                       border_width=1, border_color="#0078d4")
+        self.tip_frame.pack(fill="x", pady=(0, 15))
+        
+        tip_header = ctk.CTkFrame(self.tip_frame, fg_color="transparent")
+        tip_header.pack(fill="x", padx=15, pady=(10, 5))
+        
+        tip_icon = ctk.CTkLabel(tip_header, text="💡", font=("Segoe UI", 14))
+        tip_icon.pack(side="left")
+        
+        self.tip_title = ctk.CTkLabel(tip_header, text="Pro Tip", 
+                                       font=("Segoe UI", 11, "bold"), text_color="#0078d4")
+        self.tip_title.pack(side="left", padx=5)
+        
+        self.tip_content = ctk.CTkLabel(self.tip_frame, text="", 
+                                         font=("Segoe UI", 11), text_color="#333333",
+                                         anchor="w", justify="left")
+        self.tip_content.pack(fill="x", padx=15, pady=(0, 10))
+        
+        # Navigation buttons
+        nav_frame = ctk.CTkFrame(self.window, fg_color="#f0f0f0", height=60)
+        nav_frame.pack(fill="x", side="bottom")
+        nav_frame.pack_propagate(False)
+        
+        btn_frame = ctk.CTkFrame(nav_frame, fg_color="transparent")
+        btn_frame.pack(side="right", padx=20, pady=12)
+        
+        self.prev_btn = ctk.CTkButton(btn_frame, text="← Previous",
+                                        font=("Segoe UI", 11), fg_color="#666666",
+                                        hover_color="#777777", width=100, height=35,
+                                        command=self._prev_step, state="disabled")
+        self.prev_btn.pack(side="left", padx=5)
+        
+        self.next_btn = ctk.CTkButton(btn_frame, text="Next →",
+                                        font=("Segoe UI", 11, "bold"), fg_color="#0078d4",
+                                        hover_color="#106ebe", width=100, height=35,
+                                        command=self._next_step)
+        self.next_btn.pack(side="left", padx=5)
+        
+        close_btn = ctk.CTkButton(btn_frame, text="Close",
+                                   font=("Segoe UI", 11), fg_color="#888888",
+                                   hover_color="#999999", width=80, height=35,
+                                   command=self.window.destroy)
+        close_btn.pack(side="left", padx=5)
+        
+        self._load_step(0)
+    
+    def _update_progress(self):
+        progress = (self.current_step + 1) / len(self.steps)
+        self.progress_bar.set(progress)
+    
+    def _load_step(self, index):
+        if index >= len(self.steps):
+            self.window.destroy()
+            return
+        
+        step = self.steps[index]
+        
+        # Update step indicator
+        self.step_label.configure(text=f"Step {index + 1} of {len(self.steps)}")
+        self._update_progress()
+        
+        # Update content
+        self.step_title.configure(text=step.get('title', f'Step {index + 1}'))
+        
+        # Enable textbox, clear, insert, disable
+        self.step_desc.configure(state="normal")
+        self.step_desc.delete("0.0", "end")
+        self.step_desc.insert("0.0", step.get('description', ''))
+        self.step_desc.configure(state="disabled")
+        
+        # Update tip
+        tip = step.get('tip', '')
+        if tip:
+            self.tip_content.configure(text=tip)
+            self.tip_frame.pack(fill="x", pady=(0, 15))
+        else:
+            self.tip_frame.pack_forget()
+        
+        # Update buttons
+        self.prev_btn.configure(state="normal" if index > 0 else "disabled")
+        self.next_btn.configure(text="Finish ✓" if index == len(self.steps) - 1 else "Next →")
+    
+    def _prev_step(self):
+        if self.current_step > 0:
+            self.current_step -= 1
+            self._load_step(self.current_step)
+    
+    def _next_step(self):
+        if self.current_step < len(self.steps) - 1:
+            self.current_step += 1
+            self._load_step(self.current_step)
+        else:
+            self.window.destroy()
+
+
+# ==================== INSTRUCTION CONTENT ====================
+MODULE_INSTRUCTIONS = {
+    "Email Checker": [
+        {"title": "📋 Step 1: Prepare Your Account List",
+         "description": "Create a text file with one email address per line. Format: email:password or just email:token depending on your authentication method.\n\nExample format:\nbob@example.com:Password123\nalice@outlook.com:TokenOrPassword",
+         "tip": "Save your file as 'accounts.txt' in the same folder as the application for easy access."},
+        {"title": "🔐 Step 2: Authenticate with OAuth",
+         "description": "Click 'OAuth Login' to connect your Microsoft account. This uses the Microsoft Authentication Library (MSAL) for secure OAuth 2.0 authentication.\n\nYou'll be redirected to Microsoft's login page. After successful authentication, you'll receive an access token for API calls.",
+         "tip": "OAuth tokens expire. The application handles refresh automatically, but you may need to re-authenticate after extended periods."},
+        {"title": "📊 Step 3: Select Accounts to Check",
+         "description": "In the Checker tab, click 'Load Accounts' to import your account list. Selected accounts will be highlighted and available for indexing and modification.\n\nUse Ctrl+Click to select multiple accounts for batch operations.",
+         "tip": "Hold Shift to select a range of accounts quickly."},
+        {"title": "▶️ Step 4: Start Checking",
+         "description": "Click 'START CHECKING' to begin the validation process. The system will:\n\n1. Test each account's validity\n2. Check inbox count and status\n3. Detect any authentication issues\n4. Log results in real-time\n\nResults appear in the table with status indicators (green=valid, red=invalid).",
+         "tip": "Use the 'Stop' button if you need to halt the process. Results up to that point are preserved."},
+        {"title": "📤 Step 5: Export Results",
+         "description": "Once checking is complete, use the 'Export Hits' button to save valid accounts. You can export as:\n\n• CSV for spreadsheet analysis\n• JSON for programmatic use\n• TXT for simple lists\n\nExported hits can be directly loaded into the Email Indexer for further operations.",
+         "tip": "The 'Filter by Country' option lets you target specific geographic regions in your account list."}
+    ],
+    
+    "Email Indexer": [
+        {"title": "📂 Step 1: Select an Account",
+         "description": "First, ensure you have valid accounts from the Checker tab. In the Email Indexer tab, use the account dropdown to select which mailbox you want to index.\n\nClick 'Refresh Accounts' if you don't see your account in the list.",
+         "tip": "Only OAuth-authenticated accounts appear in the dropdown. Run OAuth Login first."},
+        {"title": "📁 Step 2: Choose Folder",
+         "description": "Click 'Load Folders' to retrieve all mailbox folders. The system will recursively fetch:\n\n• Inbox\n• Sent Items\n• Drafts\n• Deleted Items\n• All custom/created folders\n• Nested subfolders\n\nSelect the folder you want to index from the list.",
+         "tip": "Use the folder path indicator to see the full hierarchy of nested folders."},
+        {"title": "🔍 Step 3: Configure Search (Optional)",
+         "description": "You can search within the selected folder using keywords. Enter search terms in the search box and click 'Search Messages'.\n\nThe indexer supports:\n\n• Full-text search via SQLite FTS5\n• Date range filtering\n• Attachment filtering\n• Duplicate detection via Message-ID",
+         "tip": "Leave the search box empty to retrieve ALL messages in the folder."},
+        {"title": "⏳ Step 4: Pagination",
+         "description": "Messages are loaded in pages of 50. Use:\n\n• 'Next Page' / 'Prev Page' buttons\n• 'Jump to Page' for direct navigation\n• Page indicator shows current position\n\nProgress is tracked with checkpointing - you can resume interrupted operations.",
+         "tip": "Large folders may take time. The checkpoint system saves progress automatically."},
+        {"title": "💾 Step 5: Select for Modification",
+         "description": "Double-click any message to select it. The Message ID will be copied to the Body Replacer tab for modification.\n\nYou can also:\n\n• Select multiple messages with Ctrl+Click\n• Right-click for context menu options\n• Use 'Select All' for batch operations",
+         "tip": "Messages with attachments show indicator icons. Inline vs regular attachments are distinguished."}
+    ],
+    
+    "Body Replacer": [
+        {"title": "🎯 Step 1: Load Message",
+         "description": "From the Email Indexer, select a message and it will be loaded into the Body Replacer. Alternatively, enter a Message ID manually and click 'Fetch Body'.\n\nThe message content will appear in the HTML editor on the left side of the split view.",
+         "tip": "Use the 'Use Indexer Selection' button to automatically load the currently selected message from the Indexer tab."},
+        {"title": "📝 Step 2: Choose Replacement Mode",
+         "description": "Select one of four modes:\n\n• **Replace**: Complete body replacement with new content\n• **Append**: Add content to the END of existing body\n• **Prepend**: Add content to the BEGINNING of body\n• **Find & Replace**: Replace specific text patterns\n\nEach mode has specific input requirements shown below the selector.",
+         "tip": "The 'Find & Replace' mode supports regex patterns for advanced text manipulation."},
+        {"title": "📋 Step 3: Use Templates (Optional)",
+         "description": "Click any template button to load a pre-built HTML template:\n\n• 👋 Welcome - Greeting email\n• 📰 Newsletter - Professional newsletter\n• 🚨 Alert - Urgent notification\n• 📬 FollowUp - Follow-up reminder\n• 🎁 Promo - Promotional offer\n\nTemplates can be customized before applying. Save your own templates with 'Save Template'.",
+         "tip": "Templates support variable placeholders: {FIRSTNAME}, {DATE}, {COMPANY}, {LINK}"},
+        {"title": "📸 Step 4: Snapshot Backup",
+         "description": "IMPORTANT: Before modifying any email, the system can capture a forensic snapshot.\n\n• Check 'Auto-backup' to capture before every change\n• Click '📷 Snapshot' for manual capture\n• Click '↩️ Rollback' to restore from latest snapshot\n\nSnapshots include SHA-256 hash verification and are stored in the 'snapshots' folder.",
+         "tip": "Always enable auto-backup when experimenting with modifications!"},
+        {"title": "🚀 Step 5: Apply Changes",
+         "description": "Click 'APPLY CHANGES' to execute the replacement. The system will:\n\n1. Capture snapshot (if enabled)\n2. Send PATCH request to Outlook API\n3. Verify the change was applied\n4. Log results\n\nWatch the status indicator and log for success/failure messages.",
+         "tip": "Use 'Bulk Mode' to apply the same template to multiple selected messages."}
+    ],
+    
+    "Downloader": [
+        {"title": "📥 Step 1: Configure Download",
+         "description": "In the Downloader tab, select:\n\n• Output folder (where emails will be saved)\n• Format: EML, MSG, or JSON\n• Include attachments: Yes/No\n\nClick 'Browse' to select the output directory.",
+         "tip": "Create a dedicated folder for downloads to keep your emails organized."},
+        {"title": "📂 Step 2: Select Messages",
+         "description": "Choose messages to download from the Email Indexer:\n\n• Select individual messages\n• Use 'Select All in Folder' for batch\n• Filter by date range\n• Include/exclude read messages\n\nSelected messages are queued for download.",
+         "tip": "Use the 'Preview' button to see what will be downloaded before starting."},
+        {"title": "⚙️ Step 3: Set Options",
+         "description": "Configure download options:\n\n• **Progress Checkpointing**: Resume interrupted downloads\n• **Duplicate Detection**: Skip already-downloaded emails\n• **Naming Pattern**: Custom filename patterns\n• **Subfolder Structure**: Maintain folder hierarchy",
+         "tip": "Checkpointing is essential for large mailboxes. Progress is saved every 50 messages."},
+        {"title": "▶️ Step 4: Start Download",
+         "description": "Click 'START DOWNLOAD' to begin. Progress is shown with:\n\n• Progress bar\n• Count indicator (X of Y)\n• Current file being processed\n• Estimated time remaining\n\nUse 'STOP' to halt at any time. Progress is preserved.",
+         "tip": "Large downloads may take hours. Run overnight with checkpointing enabled."},
+        {"title": "✅ Step 5: Verify Downloads",
+         "description": "After download completes:\n\n1. Open the output folder\n2. Check file sizes (should be > 0 bytes)\n3. Open a sample email to verify content\n4. Check the log for any errors\n\nUse 'Open Folder' button to quickly access the output directory.",
+         "tip": "EML format is most portable - works with Outlook, Thunderbird, and most email clients."}
+    ],
+    
+    "Snapshot System": [
+        {"title": "💾 Step 1: Understanding Snapshots",
+         "description": "Snapshots are forensic backups of emails BEFORE modification. Each snapshot includes:\n\n• Complete RFC822 email content (compressed)\n• SHA-256 hash for integrity verification\n• Timestamps and metadata\n• Message-ID index for fast lookup\n\nSnapshots enable complete rollback to any previous state.",
+         "tip": "Think of snapshots as 'time travel' for your emails."},
+        {"title": "📷 Step 2: Capture a Snapshot",
+         "description": "To capture a snapshot:\n\n1. Load the email in Body Replacer\n2. Ensure 'Auto-backup' is checked\n3. OR click '📷 Snapshot' for manual capture\n\nThe system will fetch the raw RFC822 content, compute the hash, and store compressed snapshot.",
+         "tip": "Manual snapshots are useful before major edits even if auto-backup is enabled."},
+        {"title": "🔍 Step 3: View Snapshot Index",
+         "description": "In the '💾 Snapshots' tab, you'll see:\n\n• All captured snapshots\n• Verification status (✓ verified, ✗ failed)\n• Hash values for integrity\n• Timestamps and message associations\n\nDouble-click any snapshot to view full details.",
+         "tip": "Regularly verify snapshots to ensure data integrity."},
+        {"title": "↩️ Step 4: Restore from Snapshot",
+         "description": "To restore an email:\n\n1. Select the snapshot in the list\n2. Click '🔄 Restore'\n3. The original content loads into Body Replacer\n4. Review and re-apply if needed\n\nRestoration includes integrity verification before restoring.",
+         "tip": "Restored content can be saved as a new email or used to overwrite the current version."},
+        {"title": "🧹 Step 5: Maintenance",
+         "description": "Keep snapshots organized:\n\n• 'Verify All' - Check integrity of all snapshots\n• 'Cleanup Old' - Remove snapshots older than 30 days\n• 'Delete' - Remove individual snapshots\n• 'Open Folder' - Access raw snapshot files\n\nRegular cleanup prevents disk space issues.",
+         "tip": "Snapshots use gzip compression, typically 10-20% of original email size."}
+    ]
+}
+
+
 # ==================== ULTIMATE ANIMATED SPLASH SCREEN ====================
 class UltimateSplashScreen:
     """Hyper-animated cyberpunk splash with particles, glitch effects, sound, and interactivity"""
@@ -2250,6 +2690,64 @@ class HotmailUltimateGUI:
         self.snapshot_tab = self.notebook.add("💾 Snapshots")
         self.build_snapshot_tab()
 
+        # Add help buttons to each tab toolbar
+        self._add_help_buttons()
+
+    def _add_help_buttons(self):
+        """Add 'How to Use' buttons to each tab"""
+        # Checker tab help
+        checker_toolbar = self.checker_tab.winfo_children()[0] if self.checker_tab.winfo_children() else None
+        if checker_toolbar and hasattr(checker_toolbar, 'winfo_children'):
+            help_btn = ctk.CTkButton(checker_toolbar, text="❓ How to Use", width=100,
+                                      font=("Segoe UI", 10), fg_color="#0078d4",
+                                      command=lambda: self._show_instructions("Email Checker"))
+            help_btn.pack(side="right", padx=5)
+
+        # Indexer tab help
+        indexer_toolbar = self.indexer_tab.winfo_children()[0] if self.indexer_tab.winfo_children() else None
+        if indexer_toolbar and hasattr(indexer_toolbar, 'winfo_children'):
+            help_btn = ctk.CTkButton(indexer_toolbar, text="❓ How to Use", width=100,
+                                      font=("Segoe UI", 10), fg_color="#0078d4",
+                                      command=lambda: self._show_instructions("Email Indexer"))
+            help_btn.pack(side="right", padx=5)
+
+        # Replacer tab help
+        replacer_toolbar = self.replacer_tab.winfo_children()[0] if self.replacer_tab.winfo_children() else None
+        if replacer_toolbar and hasattr(replacer_toolbar, 'winfo_children'):
+            help_btn = ctk.CTkButton(replacer_toolbar, text="❓ How to Use", width=100,
+                                      font=("Segoe UI", 10), fg_color="#0078d4",
+                                      command=lambda: self._show_instructions("Body Replacer"))
+            help_btn.pack(side="right", padx=5)
+
+        # Downloader tab help
+        downloader_toolbar = self.downloader_tab.winfo_children()[0] if self.downloader_tab.winfo_children() else None
+        if downloader_toolbar and hasattr(downloader_toolbar, 'winfo_children'):
+            help_btn = ctk.CTkButton(downloader_toolbar, text="❓ How to Use", width=100,
+                                      font=("Segoe UI", 10), fg_color="#0078d4",
+                                      command=lambda: self._show_instructions("Downloader"))
+            help_btn.pack(side="right", padx=5)
+
+        # Snapshot tab help
+        snapshot_toolbar = self.snapshot_tab.winfo_children()[0] if self.snapshot_tab.winfo_children() else None
+        if snapshot_toolbar and hasattr(snapshot_toolbar, 'winfo_children'):
+            help_btn = ctk.CTkButton(snapshot_toolbar, text="❓ How to Use", width=100,
+                                      font=("Segoe UI", 10), fg_color="#0078d4",
+                                      command=lambda: self._show_instructions("Snapshot System"))
+            help_btn.pack(side="right", padx=5)
+
+    def _show_instructions(self, module_name):
+        """Show instruction wizard for a module"""
+        if module_name in MODULE_INSTRUCTIONS:
+            wizard = InstructionWizard(self.root, module_name, MODULE_INSTRUCTIONS[module_name])
+        else:
+            # Generic instructions
+            generic_steps = [
+                {"title": "Getting Started",
+                 "description": "This module is part of HOTMAIL INBOXER ULTIMATE v2.0.\n\nFor detailed instructions, refer to the documentation or contact support.",
+                 "tip": "Use the '?' icon on each tab for specific help."}
+            ]
+            wizard = InstructionWizard(self.root, module_name, generic_steps)
+
     # ==================== CHECKER TAB (ORIGINAL, MODIFIED) ====================
     def build_checker_tab(self):
         main_frame = self.checker_tab
@@ -4405,4 +4903,17 @@ def show_splash_then_main():
 
 
 if __name__ == "__main__":
-    show_splash_then_main()
+    # Start with Admin Login Screen (Windows 11 style)
+    def on_login(admin, user):
+        print(f"Logged in as: {user} (Admin: {admin})")
+        # Then show the animated splash screen
+        def on_splash_complete():
+            # Finally launch the main GUI
+            app = HotmailUltimateGUI()
+            app.root.mainloop()
+        
+        splash = UltimateSplashScreen(on_complete=on_splash_complete)
+        splash.show()
+    
+    login = AdminLoginScreen(on_login_success=on_login)
+    login.show()
