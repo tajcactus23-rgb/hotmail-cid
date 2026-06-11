@@ -49,8 +49,6 @@ jobs:
         cd $GITHUB_WORKSPACE
         pip install buildozer cython
         rm -rf .buildozer
-        # Set sdk path in buildozer
-        sed -i 's|android.sdk_path = /workspace/android-sdk|android.sdk_path = /home/runner/android-sdk|g' buildozer.spec
         buildozer android debug
       timeout-minutes: 60
     
