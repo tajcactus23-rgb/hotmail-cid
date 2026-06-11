@@ -36,21 +36,23 @@ jobs:
         ANDROID_HOME: /home/runner/android-sdk
         ANDROID_SDK_ROOT: /home/runner/android-sdk
         ANDROIDSDK: /home/runner/android-sdk
+        # Disable SDK update check to speed up
+        BUILDZER_SKIP_SDK_UPDATE: "1"
       run: |
         mkdir -p $ANDROID_HOME/cmdline-tools
         cd $ANDROID_HOME/cmdline-tools
         curl -sL https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -o cmdline.zip
         unzip -q cmdline.zip
-        # The extracted folder is 'cmdline-tools', rename to 'latest'
         if [ -d "cmdline-tools" ]; then mv cmdline-tools latest; fi
         chmod +x latest/bin/*
         yes | latest/bin/sdkmanager --licenses 2>/dev/null || true
-        yes | latest/bin/sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0" "ndk;26b" 2>/dev/null || true
         cd $GITHUB_WORKSPACE
         pip install buildozer cython
         rm -rf .buildozer
+        # Remove the NDK path so buildozer downloads it
+        sed -i '/android.ndk_path/d' buildozer.spec
         buildozer android debug
-      timeout-minutes: 60
+      timeout-minutes: 120
     
     - name: Upload APK
       uses: actions/upload-artifact@v4
